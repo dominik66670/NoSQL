@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NoSQL.Data;
 
@@ -11,9 +12,11 @@ using NoSQL.Data;
 namespace NoSQL.Migrations
 {
     [DbContext(typeof(NoSQLContext))]
-    partial class NoSQLContextModelSnapshot : ModelSnapshot
+    [Migration("20250118113055_InitialIdentity")]
+    partial class InitialIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
