@@ -32,6 +32,18 @@ namespace NoSQL
                 options.Cookie.HttpOnly = true; // Tylko serwer mo¿e modyfikowaæ ciasteczko
                 options.Cookie.IsEssential = true; // Wymagane dla GDPR
             });
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                // Wy³¹cz wymaganie potwierdzenia e-maila
+                options.SignIn.RequireConfirmedEmail = false;
+
+                // Opcjonalnie: ustawienia hase³
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 3;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
