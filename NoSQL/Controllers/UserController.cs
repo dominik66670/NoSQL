@@ -67,6 +67,9 @@ namespace NoSQL.Controllers
         // Wylogowanie użytkownika
         public async Task<IActionResult> Logout()
         {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var sessionKey = $"Session_{user.Id}";
+            await _distributedCache.RemoveAsync(sessionKey);
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }

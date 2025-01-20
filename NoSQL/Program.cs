@@ -31,6 +31,7 @@ namespace NoSQL
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // Czas wygaœniêcia sesji
                 options.Cookie.HttpOnly = true; // Tylko serwer mo¿e modyfikowaæ ciasteczko
                 options.Cookie.IsEssential = true; // Wymagane dla GDPR
+                
             });
             builder.Services.Configure<IdentityOptions>(options =>
             {
