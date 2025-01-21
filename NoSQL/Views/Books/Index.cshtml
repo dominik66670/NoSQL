@@ -1,14 +1,12 @@
 ﻿@model IEnumerable<NoSQL.Models.Book>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista książek";
 }
 
-<h1>Index</h1>
+<h1>Lista książek</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
@@ -61,9 +59,7 @@
                 @Html.DisplayFor(modelItem => item.cena)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.id">Dodaj do koszyka</a>
             </td>
         </tr>
 }

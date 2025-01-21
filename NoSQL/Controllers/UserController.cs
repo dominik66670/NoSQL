@@ -53,7 +53,7 @@ namespace NoSQL.Controllers
             if (result.Succeeded)
             {
                 // Zapisz sesję w Redis
-                var userSession = new { user.UserName, user.Email };
+                UserSession userSession = new UserSession() { UserName= user.UserName,  Email=user.Email, personalCart = new Cart()};
                 var sessionData = JsonSerializer.Serialize(userSession);
                 await _distributedCache.SetStringAsync($"Session_{user.Id}", sessionData);
 
