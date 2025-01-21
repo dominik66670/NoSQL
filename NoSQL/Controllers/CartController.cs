@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Model.Strings;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using NoSQL.Data;
@@ -20,6 +22,7 @@ namespace NoSQL.Controllers
             _signInManager = signInManager;
             _userManager = userManager;
             _distributedCache = distributedCache;
+
         }
         public async Task<IActionResult> Index()
         {
@@ -50,14 +53,51 @@ namespace NoSQL.Controllers
             var sessionData = await _distributedCache.GetStringAsync(sessionKey);
             if (sessionData != null)
             {
-                
+                var options = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                };
                 UserSession UserSession = JsonSerializer.Deserialize<UserSession>(sessionData);
                 UserSession.personalCart.Add(book);
                 var newSessionData = JsonSerializer.Serialize(UserSession);
-                await _distributedCache.SetStringAsync(sessionKey, newSessionData);
+                await _distributedCache.SetStringAsync(sessionKey, newSessionData,options);
                 return RedirectToAction("Index", "Books");
             }
             return RedirectToAction("Index", "Books");
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteFromCart(int Id) 
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            Book book = await _context.Book.FirstOrDefaultAsync(b => b.id == Id);
+            if (book == null)
+            {
+                return RedirectToAction("Index", "Cart");
+            }
+            var sessionKey = $"Session_{user.Id}";
+            var sessionData = await _distributedCache.GetStringAsync(sessionKey);
+            if (sessionData != null)
+            {
+
+                UserSession UserSession = JsonSerializer.Deserialize<UserSession>(sessionData);
+                if (UserSession.personalCart.Any(book => book.id == Id)) 
+                {
+                    var options = new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                    };
+                    UserSession.personalCart.Remove(UserSession.personalCart.Find(book => book.id==Id));
+                    var newSessionData = JsonSerializer.Serialize(UserSession);
+                    await _distributedCache.SetStringAsync(sessionKey, newSessionData,options);
+                }
+                
+                return RedirectToAction("Index", "Cart");
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }

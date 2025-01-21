@@ -16,7 +16,7 @@ namespace NoSQL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            //builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<NoSQLContext>();
+            
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
@@ -28,17 +28,17 @@ namespace NoSQL
 
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // Czas wygaœniêcia sesji
-                options.Cookie.HttpOnly = true; // Tylko serwer mo¿e modyfikowaæ ciasteczko
-                options.Cookie.IsEssential = true; // Wymagane dla GDPR
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
                 
             });
             builder.Services.Configure<IdentityOptions>(options =>
             {
-                // Wy³¹cz wymaganie potwierdzenia e-maila
+                
                 options.SignIn.RequireConfirmedEmail = false;
 
-                // Opcjonalnie: ustawienia hase³
+                
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 3;
                 options.Password.RequireNonAlphanumeric = false;

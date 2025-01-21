@@ -32,7 +32,7 @@ namespace NoSQL.Controllers
 
         public IActionResult Index()
         {
-            var users =_context.Users.ToList(); // Pobiera wszystkich użytkowników
+            var users =_context.Users.ToList();
             return View(users);
         }
         public IActionResult Login()
@@ -52,10 +52,14 @@ namespace NoSQL.Controllers
             var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent: false, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                // Zapisz sesję w Redis
+                
                 UserSession userSession = new UserSession() { UserName= user.UserName,  Email=user.Email, personalCart = new Cart()};
                 var sessionData = JsonSerializer.Serialize(userSession);
-                await _distributedCache.SetStringAsync($"Session_{user.Id}", sessionData);
+                var options = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                };
+                await _distributedCache.SetStringAsync($"Session_{user.Id}", sessionData,options);
 
                 return RedirectToAction("Index", "Home");
             }
@@ -64,7 +68,7 @@ namespace NoSQL.Controllers
             return View();
         }
 
-        // Wylogowanie użytkownika
+        
         public async Task<IActionResult> Logout()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -94,8 +98,7 @@ namespace NoSQL.Controllers
 
                 if (result.Succeeded)
                 {
-                    // Automatyczne logowanie po rejestracji
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    
                     return RedirectToAction("Index", "Home");
                 }
 

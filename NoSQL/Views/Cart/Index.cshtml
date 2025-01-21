@@ -8,15 +8,18 @@
 {
     <div class="book-item">
         <div class="book-info">
-            <h3 class="book-title">@book.tytul</h3>
+            <p class="book-title">@book.tytul</p>
             <p class="book-author">@book.autor</p>
         </div>
         <div class="book-action">
             <span class="book-price">@book.cena.ToString("C")</span>
-            <form asp-action="Delete" asp-controller="Books" method="post">
+            <form asp-action="DeleteFromCart" asp-controller="Cart" method="post">
                 <input type="hidden" name="id" value="@book.id" />
                 <button type="submit" class="delete-button">Usuń</button>
             </form>
         </div>
     </div>
 }
+<div>
+    <p>Łącznie : @Model.Sum(b => b.cena).ToString("C") </p>
+</div>
