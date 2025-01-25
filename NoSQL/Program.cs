@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NoSQL.Data;
+using NoSQL.Models;
 
 namespace NoSQL
 {
@@ -15,7 +16,7 @@ namespace NoSQL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            //builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<NoSQLContext>();
+            
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
@@ -27,9 +28,22 @@ namespace NoSQL
 
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // Czas wygaœniêcia sesji
-                options.Cookie.HttpOnly = true; // Tylko serwer mo¿e modyfikowaæ ciasteczko
-                options.Cookie.IsEssential = true; // Wymagane dla GDPR
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                
+            });
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                
+                options.SignIn.RequireConfirmedEmail = false;
+
+                
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 3;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
             });
             var app = builder.Build();
 
@@ -39,6 +53,12 @@ namespace NoSQL
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                SeedData.Initialize(services);
             }
 
             app.UseHttpsRedirection();

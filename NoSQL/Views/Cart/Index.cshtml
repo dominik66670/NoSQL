@@ -1,0 +1,25 @@
+﻿@model Cart
+@{
+    ViewData["Title"] = "Twój koszyk";
+}
+<h1>Twój koszyk</h1>
+
+@foreach (var book in Model)
+{
+    <div class="book-item">
+        <div class="book-info">
+            <p class="book-title">@book.tytul</p>
+            <p class="book-author">@book.autor</p>
+        </div>
+        <div class="book-action">
+            <span class="book-price">@book.cena.ToString("C")</span>
+            <form asp-action="DeleteFromCart" asp-controller="Cart" method="post">
+                <input type="hidden" name="id" value="@book.id" />
+                <button type="submit" class="delete-button">Usuń</button>
+            </form>
+        </div>
+    </div>
+}
+<div>
+    <p>Łącznie : @Model.Sum(b => b.cena).ToString("C") </p>
+</div>

@@ -1,22 +1,20 @@
-﻿@model IEnumerable<NoSQL.Models.Book>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@model IEnumerable<NoSQL.Models.Book>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista książek";
 }
 
-<h1>Index</h1>
+<h1>Lista książek</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.isbn)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.opis)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.tytul)
@@ -37,13 +35,10 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model) {
+            <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.isbn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.opis)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.tytul)
@@ -60,11 +55,20 @@
             <td>
                 @Html.DisplayFor(modelItem => item.cena)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
-            </td>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <td>
+                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.id">Dodaj do koszyka</a>
+                </td>
+            }else
+            {
+                <td>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Zaloguj się by dodać do koszyka</a>
+                </td>
+                    
+            }
+
+            
         </tr>
 }
     </tbody>
